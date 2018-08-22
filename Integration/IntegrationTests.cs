@@ -1,8 +1,6 @@
 using AccountOwnerServer;
 using Entities.Models;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net;
@@ -11,20 +9,23 @@ using Xunit;
 
 namespace Integration
 {
-    public class IntegrationTests
+    public class IntegrationTests: IClassFixture<WebApplicationFactory<Startup>>
     {
-        private readonly TestContext _context;
+        private readonly WebApplicationFactory<Startup> _factory;
 
-        public IntegrationTests()
+        public IntegrationTests(WebApplicationFactory<Startup> factory)
         {
-            _context = new TestContext();
+            _factory = factory;
         }
 
         [Fact]
         public async Task GetAllOwners_ReturnsOkResponse()
         {
+            //Arrange 
+            var client = this._factory.CreateClient();
+
             // Act
-            var response = await _context.Client.GetAsync("/api/owner");
+            var response = await client.GetAsync("/api/owner");
             response.EnsureSuccessStatusCode();
 
             // Assert
@@ -34,8 +35,10 @@ namespace Integration
         [Fact]
         public async Task GetAllOwners_ReturnsAListOfOwners()
         {
+            var client = this._factory.CreateClient();
+
             // Act
-            var response = await _context.Client.GetAsync("/api/owner");
+            var response = await client.GetAsync("/api/owner");
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
             var owners = JsonConvert.DeserializeObject<List<Owner>>(responseString);

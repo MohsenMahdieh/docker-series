@@ -17,9 +17,13 @@ namespace AccountOwnerServer
             BuildWebHost(args).Run();
         }
 
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+        }
+
         public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+           CreateWebHostBuilder(null)
                 .Build();
     }
 }
