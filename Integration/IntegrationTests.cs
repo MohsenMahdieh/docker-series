@@ -35,6 +35,7 @@ namespace Integration
         [Fact]
         public async Task GetAllOwners_ReturnsAListOfOwners()
         {
+            //Arrange
             var client = this._factory.CreateClient();
 
             // Act

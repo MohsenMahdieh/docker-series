@@ -24,6 +24,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.ci.yml = docker-compose.ci.yml
 		docker-compose.integration.yml = docker-compose.integration.yml
 		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+		Dockerfile.Integration = Dockerfile.Integration
+		Jenkinsfile = Jenkinsfile
 	EndProjectSection
 EndProject
 Global

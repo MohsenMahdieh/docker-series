@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore-build as build-image
+FROM microsoft/dotnet:2.1-sdk as build-image
 
 WORKDIR /home/app
 
@@ -10,11 +10,11 @@ RUN dotnet restore
 
 COPY . .
 
-RUN dotnet test --verbosity=normal --results-directory /TestResults/ --logger "trx;LogFileName=test_results.trx" ./Tests/Tests.csproj
+RUN dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="./TestResults/coverage.xml" --verbosity=normal --results-directory /TestResults/ --logger "trx;LogFileName=test_results.trx" ./Tests/Tests.csproj
 
 RUN dotnet publish ./AccountOwnerServer/AccountOwnerServer.csproj -o /publish/
 
-FROM microsoft/aspnetcore
+FROM microsoft/dotnet:2.1-aspnetcore-runtime
 
 WORKDIR /publish
 
