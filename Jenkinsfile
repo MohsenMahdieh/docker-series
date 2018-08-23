@@ -42,6 +42,7 @@ pipeline {
             steps {
                 script {
                     WEB_IMAGE_NAME="${env.ACR_LOGINSERVER}/accountownerapp:B${BUILD_NUMBER}"
+                    sh "docker tag accountownerapp:B${BUILD_NUMBER} $WEB_IMAGE_NAME"
                     sh "docker login ${env.ACR_LOGINSERVER} -u ${ACR_CREDS_USR} -p ${ACR_CREDS_PSW}"
                     sh "docker push $WEB_IMAGE_NAME"
                 }
