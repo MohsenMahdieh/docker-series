@@ -7,22 +7,20 @@ pipeline {
     stages {
         stage('Build & Unit Test') {
             steps {
-                slackSend color: "good", message : "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+                slackSend color: "good", message : "Build started - Job - ${env.JOB_NAME} Build Number - ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
                 sh "docker build -t accountownerapp:B${BUILD_NUMBER} -f Dockerfile ."
-                sh "docker build -t accountownerapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration ."
             }
         }
         stage('Publish Unit Testing & Code Coverage Reports'){
             steps {
                 script {
-                    containername = "accountownerapp-b${BUILD_NUMBER}"
                     containerID = sh (
-                    script: "docker run -d --name ${containername} accountownerapp:B${BUILD_NUMBER}", 
+                    script: "docker run -d accountownerapp:B${BUILD_NUMBER}", 
                     returnStdout: true
                     ).trim()
                     echo "Container ID is ==> ${containerID}"
-                    sh "docker cp ${containername}:/TestResults/test_results.trx test_results.trx"
-                    sh "docker cp ${containername}:/TestResults/coverage.xml coverage.xml"
+                    sh "docker cp ${containerID}:/TestResults/test_results.trx test_results.trx"
+                    sh "docker cp ${containerID}:/TestResults/coverage.xml coverage.xml"
                     sh "docker stop ${containerID}"
                     sh "docker rm ${containerID}"
                     step([$class: 'MSTestPublisher', failOnError: true, testResultsFile: '**/test_results.trx'])
@@ -30,8 +28,9 @@ pipeline {
                 }
             }
         }
-        stage('Integration Test') {
+        stage('Build & Integration Test') {
             steps {
+                sh "docker build -t accountownerapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration ."
                 sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
                 sh "docker-compose -f docker-compose.integration.yml down -v"
             }
@@ -66,10 +65,10 @@ pipeline {
     }
     post {
         success {
-            slackSend color: "good", message : "Build finished sucessfully - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+            slackSend color: "good", message : "Build finished sucessfully - Job - ${env.JOB_NAME} Build Number - ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
         failure {
-            slackSend color: "#439FE0", message : "Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+            slackSend color: "#439FE0", message : "Build failed - Job - ${env.JOB_NAME} Build Number - ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
     }
 }
