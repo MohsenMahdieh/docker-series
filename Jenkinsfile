@@ -15,16 +15,17 @@ pipeline {
         stage('Publish Unit Testing & Code Coverage Reports'){
             steps {
                 script {
+                    containername = "accountownerapp-b${BUILD_NUMBER}"
                     containerID = sh (
-                    script: "docker run -d accountownerapp:B${BUILD_NUMBER}", 
+                    script: "docker run -d --name ${containername} accountownerapp:B${BUILD_NUMBER}", 
                     returnStdout: true
                     ).trim()
                     echo "Container ID is ==> ${containerID}"
-                    sh "docker cp ${containerID}:/TestResults/test_results.trx test_results.trx"
-                    sh "docker cp ${containerID}:/TestResults/coverage.xml coverage.xml"
+                    sh "docker cp ${containername}:/TestResults/test_results.trx test_results.trx"
+                    sh "docker cp ${containername}:/TestResults/coverage.xml coverage.xml"
                     sh "docker stop ${containerID}"
                     sh "docker rm ${containerID}"
-                    step([$class: 'MSTestPublisher', failOnError: true, testResultsFile: '**/*.trx'])
+                    step([$class: 'MSTestPublisher', failOnError: true, testResultsFile: '**/test_results.trx'])
                     step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
                 }
             }
