@@ -62,9 +62,6 @@ pipeline {
         // }
     }
     post {
-        always {
-            
-        }
         success {
             slackSend color: "good", message : "Build finished sucessfully - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
