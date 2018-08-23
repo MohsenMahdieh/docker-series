@@ -1,8 +1,13 @@
 pipeline {
     agent any
+    options {
+        timeout(time: 1, unit: 'HOURS') 
+        timestamps()
+    }
     stages {
         stage('Build & Unit Test') {
             steps {
+                slackSend color: "good", message : "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
                 sh "docker build -t accountownerapp:B${BUILD_NUMBER} -f Dockerfile ."
                 sh "docker build -t accountownerapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration ."
             }
@@ -26,11 +31,11 @@ pipeline {
         }
         stage('Integration Test') {
             steps {
-                 sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
+                sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
                 sh "docker-compose -f docker-compose.integration.yml down -v"
             }
         }
-        stage('Pushing Conatiner to Registry') {
+        stage('Pushing Conatiners to Registry') {
             environment {
                 ACR_CREDS = credentials('acr-credential')
             }
@@ -61,12 +66,10 @@ pipeline {
             
         }
         success {
-            message = "Build ${BUILD_NUMBER} has finished successfully.. Please check Jenkins dashboard for more information.."
-            mail to: mohsen.mahdieh@conexxia.com.au, subject: message
+            slackSend color: "good", message : "Build finished sucessfully - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
         failure {
-            message = "Build ${BUILD_NUMBER} has failed.. Please check Jenkins dashboard for more information.."
-            mail to: mohsen.mahdieh@conexxia.com.au, subject: message
+            slackSend color: "#439FE0", message : "Build failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
     }
 }
