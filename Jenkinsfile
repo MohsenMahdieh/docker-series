@@ -40,9 +40,11 @@ pipeline {
                 ACR_CREDS = credentials('acr-credential')
             }
             steps {
-                WEB_IMAGE_NAME="${env.ACR_LOGINSERVER}/accountownerapp:B${BUILD_NUMBER}"
-                sh "docker login ${env.ACR_LOGINSERVER} -u ${ACR_CREDS_USR} -p ${ACR_CREDS_PSW}"
-                sh "docker push $WEB_IMAGE_NAME"
+                script {
+                    WEB_IMAGE_NAME="${env.ACR_LOGINSERVER}/accountownerapp:B${BUILD_NUMBER}"
+                    sh "docker login ${env.ACR_LOGINSERVER} -u ${ACR_CREDS_USR} -p ${ACR_CREDS_PSW}"
+                    sh "docker push $WEB_IMAGE_NAME"
+                }
             }
         }
         // stage('Publish Integration Testing Report'){
