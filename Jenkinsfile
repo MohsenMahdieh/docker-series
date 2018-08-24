@@ -31,9 +31,8 @@ pipeline {
         }
         stage('Build & Integration Test') {
             steps {
-                sh "docker-compose rm -v"
                 sh "docker-compose -f docker-compose.integration.yml up --remove-orphans --force-recreate --abort-on-container-exit"
-                sh "docker-compose -f docker-compose.integration.yml down -v"
+                // sh "docker-compose -f docker-compose.integration.yml down -v"
             }
         }
         stage('Pushing Conatiners to Registry') {
