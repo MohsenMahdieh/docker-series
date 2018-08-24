@@ -4,24 +4,17 @@ services:
   db:
     image: mysql:latest
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: accountowner
       MYSQL_USER: dbuser
       MYSQL_PASSWORD: dbuserpassword
       DEBUG: 1
-    healthcheck:
-      test:  mysql --user=dbuser --password=dbuserpassword -e 'select * from account'
-      timeout: 10s
-      interval: 5s
-      retries: 10
     volumes:
       - dbdata:/var/lib/mysql
       - ./_MySQL_Init_Script:/docker-entrypoint-initdb.d
-    restart: always
   integration:
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     image: "accountownerapp:test-B${BUILD_NUMBER}"
     build:
       context: .

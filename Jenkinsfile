@@ -7,7 +7,8 @@ pipeline {
     stages {
         stage('Build & Integration Test1') {
             steps {
-                sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
+                sh "docker-compose -f docker-compose-db.yml up"
+                sh "docker-compose -f docker-compose.integration.yml up --abort-on-container-exit"
                 sh "docker-compose -f docker-compose.integration.yml down -v"
             }
         }
