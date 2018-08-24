@@ -5,17 +5,10 @@ pipeline {
         timestamps()
     }
     stages {
-        stage('Build & Integration Test1') {
-            steps {
-                sh "docker-compose -f docker-compose-db.yml up -d"
-                sh "sleep 80s"
-                sh "docker-compose -f docker-compose.integration.yml up --abort-on-container-exit"
-                sh "docker-compose -f docker-compose.integration.yml down -v"
-            }
-        }
         stage('Build & Unit Test') {
             steps {
                 slackSend color: "good", message : "Build started - Job - ${env.JOB_NAME} Build Number - ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+                sh "docker-compose -f docker-compose-db.yml up -d"
                 sh "docker build -t accountownerapp:B${BUILD_NUMBER} -f Dockerfile ."
                 sh "docker build -t accountownerapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration ."
             }
@@ -39,7 +32,7 @@ pipeline {
         }
         stage('Build & Integration Test') {
             steps {
-                sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
+                sh "docker-compose -f docker-compose.integration.yml up --abort-on-container-exit"
                 sh "docker-compose -f docker-compose.integration.yml down -v"
             }
         }
