@@ -20,5 +20,5 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.Integration
-  volumes:
+volumes:
     dbdata:
