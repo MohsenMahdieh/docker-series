@@ -8,7 +8,7 @@ pipeline {
         stage('Build & Integration Test1') {
             steps {
                 sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
-                sh "docker-compose -f docker-compose.integration.yml down -v"
+                //sh "docker-compose -f docker-compose.integration.yml down -v"
             }
         }
         stage('Build & Unit Test') {
