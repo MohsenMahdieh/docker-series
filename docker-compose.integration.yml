@@ -11,8 +11,8 @@ services:
       DEBUG: 1
     healthcheck:
       test:  mysql --user=dbuser --password=dbuserpassword -e 'select * from account'
-      timeout: 5s
-      internal: 5s
+      timeout: 10s
+      interval: 5s
       retries: 10
     volumes:
       - dbdata:/var/lib/mysql
