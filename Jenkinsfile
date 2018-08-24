@@ -9,6 +9,7 @@ pipeline {
             steps {
                 slackSend color: "good", message : "Build started - Job - ${env.JOB_NAME} Build Number - ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
                 sh "docker build -t accountownerapp:B${BUILD_NUMBER} -f Dockerfile ."
+                sh "docker build -t accountownerapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration ."
             }
         }
         stage('Publish Unit Testing & Code Coverage Reports'){
@@ -30,7 +31,6 @@ pipeline {
         }
         stage('Build & Integration Test') {
             steps {
-                sh "docker build -t accountownerapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration ."
                 sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
                 sh "docker-compose -f docker-compose.integration.yml down -v"
             }
