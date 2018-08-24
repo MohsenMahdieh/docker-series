@@ -5,6 +5,12 @@ pipeline {
         timestamps()
     }
     stages {
+        stage('Build & Integration Test1') {
+            steps {
+                sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
+                sh "docker-compose -f docker-compose.integration.yml down -v"
+            }
+        }
         stage('Build & Unit Test') {
             steps {
                 slackSend color: "good", message : "Build started - Job - ${env.JOB_NAME} Build Number - ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
@@ -31,8 +37,8 @@ pipeline {
         }
         stage('Build & Integration Test') {
             steps {
-                sh "docker-compose -f docker-compose.integration.yml up --remove-orphans --force-recreate --abort-on-container-exit"
-                // sh "docker-compose -f docker-compose.integration.yml down -v"
+                sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
+                sh "docker-compose -f docker-compose.integration.yml down -v"
             }
         }
         stage('Pushing Conatiners to Registry') {
