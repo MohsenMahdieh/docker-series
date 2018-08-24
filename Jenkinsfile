@@ -48,7 +48,17 @@ pipeline {
                 }
             }
         }
-        
+        stage('Deploying to Kubernetes cluster') {
+            steps {
+                script {
+                    WEB_IMAGE_NAME="${env.ACR_LOGINSERVER}/accountownerapp:B${BUILD_NUMBER}"
+                    DEPLOYMENT_NAME="deployment/accountownerapp-api"
+                    sh "kubectl rollout pause $DEPLOYMENT_NAME --kubeconfig /var/lib/jenkins/config || true"
+                    sh "kubectl set image $DEPLOYMENT_NAME accountownerapp=$WEB_IMAGE_NAME --kubeconfig /var/lib/jenkins/config"
+                    sh "kubectl rollout resume $DEPLOYMENT_NAME --kubeconfig /var/lib/jenkins/config"
+                }
+            }
+        }
         // stage('Publish Integration Testing Report'){
         //     steps {
         //         script {

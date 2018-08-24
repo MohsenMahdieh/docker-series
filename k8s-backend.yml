@@ -1,0 +1,46 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: accountownerapp-back
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: accountownerapp-back
+    spec:
+      containers:
+      - name: accountownerapp-back
+        image: mysql:5.7
+        env:
+        - name: MYSQL_RANDOM_ROOT_PASSWORD
+          value: "1"
+        - name: MYSQL_DATABASE
+          value: "accountowner"
+        - name: MYSQL_USER
+          value: "dbuser"
+        - name: MYSQL_PASSWORD
+          value: "dbuserpassword"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: dbdata
+          mountPath: /var/lib/mysql
+        - name: init
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: dbdata
+        emptyDir: {}
+      - name: init
+        configMap:
+          name: mysql-initdb-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: accountownerapp-back

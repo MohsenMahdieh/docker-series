@@ -16,7 +16,7 @@ services:
    accountownerapp:
      depends_on:
        - db
-     image: codemazeblog/accountownerapp
+     image: accountownerapp
      build:
        context: .
      ports:
