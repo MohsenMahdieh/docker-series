@@ -8,7 +8,6 @@ pipeline {
         stage('Build & Unit Test') {
             steps {
                 slackSend color: "good", message : "Build started - Job - ${env.JOB_NAME} Build Number - ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-                sh "docker-compose -f docker-compose-db.yml up -d"
                 sh "docker build -t accountownerapp:B${BUILD_NUMBER} -f Dockerfile ."
                 sh "docker build -t accountownerapp:test-B${BUILD_NUMBER} -f Dockerfile.Integration ."
             }
@@ -30,12 +29,12 @@ pipeline {
                 }
             }
         }
-        stage('Build & Integration Test') {
-            steps {
-                sh "docker-compose -f docker-compose.integration.yml up --abort-on-container-exit"
-                sh "docker-compose -f docker-compose.integration.yml down -v"
-            }
-        }
+        // stage('Build & Integration Test') {
+        //     steps {
+        //         sh "docker-compose -f docker-compose.integration.yml up --force-recreate --abort-on-container-exit"
+        //         sh "docker-compose -f docker-compose.integration.yml down -v"
+        //     }
+        // }
         stage('Pushing Conatiners to Registry') {
             environment {
                 ACR_CREDS = credentials('acr-credential')
