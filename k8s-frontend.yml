@@ -17,25 +17,12 @@ spec:
     spec:
       containers:
       - name: accountownerapp-api
-        image: accountownerapp:B41
-        ports:
-        - containerPort: 80
-        resources:
-          requests:
-            cpu: 250m
-          limits:
-            cpu: 500m
+        image: accountownerapp
+        # resources:
+        #   requests:
+        #     cpu: 250m
+        #   limits:
+        #     cpu: 500m
         env:
         - name: DB
           value: "db"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: accountownerapp-front
-spec:
-  type: LoadBalancer
-  ports:
-  - port: 8080
-  selector:
-    app: accountownerapp-front
